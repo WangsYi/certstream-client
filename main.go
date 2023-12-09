@@ -42,12 +42,19 @@ func main() {
 			if err != nil {
 				log.Fatal(err)
 			}
-			defer f.Close()
 			_, err = f.WriteString(data)
 			if err != nil {
+				err = f.Close()
+				if err != nil {
+					log.Fatal(err)
+				}
 				log.Fatal(err)
 			}
 			f.Sync()
+			err = f.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
 
 		case err := <-errStream:
 			log.Error(err)
