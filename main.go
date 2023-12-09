@@ -38,7 +38,7 @@ func main() {
 			}
 			// 用时间戳为文件名创建文件，并保存data字符串到文件
 
-			f, err := os.Create("./data" + strconv.FormatInt(time.Now().Unix(), 10) + ".txt")
+			f, err := os.Create("./data/" + strconv.FormatInt(time.Now().Unix()/1000, 10) + strconv.FormatInt(time.Now().Unix(), 10) + ".txt")
 			if err != nil {
 				log.Fatal(err)
 			}
