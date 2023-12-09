@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"strconv"
 	"time"
@@ -32,17 +33,32 @@ func main() {
 
 			log.Info("Message type -> ", messageType)
 			log.Info("recv: ", jq)
-			data, err := jq.String("data")
+			data, err := jq.Interface("data")
 			if err != nil {
 				log.Fatal("Error decoding jq string")
 			}
-			// 用时间戳为文件名创建文件，并保存data字符串到文件
+			dataRaw, err := json.Marshal(data)
+			if err != nil {
+				log.Fatal("Error decoding jq string")
+			}
+			dataStr := string(dataRaw)
 
-			f, err := os.Create("./data/" + strconv.FormatInt(time.Now().Unix()/1000, 10) + strconv.FormatInt(time.Now().Unix(), 10) + ".txt")
+			// 用时间戳为文件名创建文件，并保存data字符串到文件
+			tm := time.Now().Unix()
+			dir := "./data/" + strconv.FormatInt(tm/1000, 10)
+			_, err = os.Stat(dir)
+			if err != nil {
+				err = os.MkdirAll(dir, os.ModePerm)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
+
+			f, err := os.Create(dir + "/" + strconv.FormatInt(time.Now().Unix(), 10) + ".txt")
 			if err != nil {
 				log.Fatal(err)
 			}
-			_, err = f.WriteString(data)
+			_, err = f.WriteString(dataStr)
 			if err != nil {
 				err = f.Close()
 				if err != nil {
